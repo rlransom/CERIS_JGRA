@@ -1,4 +1,4 @@
-line_code	env_code	FTdap	PH
+line_code	env_code	FT	PH
 33-16	01NC06	74	175
 33-16	02MO06	72	175
 33-16	03NY06	103	NA
