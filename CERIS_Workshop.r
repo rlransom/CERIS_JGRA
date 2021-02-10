@@ -22,16 +22,16 @@ col_palette <- diverge_hcl(col_wdw + 1, h = c(260, 0), c = 100, l = c(50, 90), p
 t_base <- 50; t_max1 <- 100; t_max2 <- 1000; Haun_threshold <- 0; p <- 1 
 
 ###
-Top_dir <- 'C:/Users/schamart/Box/CSSA virtual meeting/Workshops/Phenotype plasticity/Workshop_2020/'
+Top_dir <- 'D:/0GbE/CERES_MS/MP/GitHub_files/'
 
 ###### If you modify some functions in this file, please run Line 27 each time to reload the updated functions
-subfunction_file <- paste(Top_dir, 'Sub_functions_Workshop.r', sep = '');
+subfunction_file <- paste(Top_dir, 'Sub_functions.r', sep = '');
 source(subfunction_file);
 
 ######################################
-experiment <- 'Maize'; ## Options: Maize, Wheat, Oat; 
+experiment <- '0Maize'; ## Options: Maize, Wheat, Oat; 
 ##### For Maize, the traits are DTA, PH, and Yield; for Sorghum: the trait is called as FTgdd; for Rice, the trait is FTdap; ; 
-trait <- 'DTA'; ##### Options: for Maize: FTdap, PH,; Wheat, FTdap, PH, or GY; for oat: FTdap, PH, GY
+trait <- 'FT'; ##### Options: for Maize: FTdap, PH,; Wheat, FTdap, PH, or GY; for oat: FTdap, PH, GY
 ######################################
 
 exp_dir <- paste(Top_dir, experiment, '/', sep = '')
@@ -46,8 +46,6 @@ Paras <- c('DL', 'GDD', 'PTT', 'PTR', 'PTS');
 exp_traits_file <- paste(exp_dir, 'Trait_records.txt', sep = '');
 exp_traits <- read.table(exp_traits_file, sep = "\t", header = T, stringsAsFactors = F, na.string = 'NA');
 
-if(!('FTdap' %in% colnames(exp_traits))) {exp_traits$FTdap <- exp_traits$DTA};
-
 all_env_codes <- unique(exp_traits$env_code);
 env_cols <- rainbow_hcl(length(all_env_codes), c = 80, l = 60, start = 0, end = 300, fixup = TRUE, alpha = 0.75);
 
@@ -59,7 +57,13 @@ env_cols <- rainbow_hcl(length(all_env_codes), c = 80, l = 60, start = 0, end = 
   colnames(exp_trait)[3] <- 'Yobs';
   exp_trait <- aggregate(Yobs ~  line_code + env_code, data = exp_trait, mean) ## To make sure only one phenotype record per each line in each environment
   exp_trait <- exp_trait[!is.na(exp_trait$Yobs),];
-
+  
+### remove outlier environments, such as one with high missing rate
+  if (trait == 'FT') {
+   env_outliers <- c('03NY06', '08MO07');
+   exp_trait <- exp_trait[!(exp_trait$env_code %in% env_outliers),];
+  }
+  
   line_codes <- unique(exp_trait$line_code); 
   env_mean_trait_0 <- na.omit(aggregate(x = exp_trait$Yobs, by = list(env_code = exp_trait$env_code), mean, na.rm = T));
   colnames(env_mean_trait_0)[2] <- 'meanY';
@@ -71,30 +75,16 @@ env_cols <- rainbow_hcl(length(all_env_codes), c = 80, l = 60, start = 0, end = 
 
   ##### searching the critical window having the strongest correlation with environmental mean
   ##### the window can be adjusted based on biological meaning
-  ##### 'FTgdd_7Envs_PTTPTR_0LOO_cor.txt' stores all correlations from all the tested windows and environmental parameters;
-  ##### 'MaxR_FTgdd_7Envs_0LOO.png' is the visualization 
+  ##### 'FT_9Envs_PTTPTR_0LOO_cor.txt' stores all correlations from all the tested windows and environmental parameters;
+  ##### 'MaxR_FTgdd_9Envs_0LOO.png' is the visualization 
   pop_cor_file <- paste(exp_trait_dir, trait, '_', nrow(env_mean_trait), 'Envs_PTTPTR_', 0, 'LOO_cor.txt', sep = '');
-  Exhaustive_search(env_mean_trait, PTT_PTR, searching_daps, exp_trait_dir, exp_traits$FTdap, trait, 1, searching_daps, searching_daps, 0, Paras, pop_cor_file)#; searching_daps, searching_daps);
-
-#######################################################
-##### Contributed from Laura Cortes (ltibbs@iastate.edu) ##########
-##### To help navigate the strongest correlations identified for each environment parameter. 
-##### View the results with 'FTgdd_7Envs_PTTPTR_0LOO_cor.txt' and 'MaxR_FTgdd_7Envs_0LOO.png'
-##### R_PTT means the original correlation between PTT and population mean; while nR_PTT means the correlation of 0 - R_PTT. 
-  search.results <- read.table(pop_cor_file, header = T)
-  search.results <- search.results %>%
-    tidyr::gather(key="Parameter", value="Corr", -Day_x, -Day_y, -window, -pop_code) %>%
-    arrange(-Corr)
-  search.results <- search.results %>%
-    group_by(Parameter) %>%
-    top_n(5, Corr)    
-  View(search.results);
+  Exhaustive_search(env_mean_trait, PTT_PTR, searching_daps, exp_trait_dir, exp_traits$FT, trait, 1, searching_daps, searching_daps, 0, Paras, pop_cor_file)#; searching_daps, searching_daps);
   
 ##########################################################
 ### Change the following three parameters for the window and environmental parameter with the strongest correlation
-  maxR_dap1 <- 23;
-  maxR_dap2 <- 43;
-  kPara_Name <- 'GDD';
+  maxR_dap1 <- 22;
+  maxR_dap2 <- 37;
+  kPara_Name <- 'PTR';
 ##### #################################################### 
 
   PTT_PTR_ind <-  which(colnames(PTT_PTR) == kPara_Name); 
@@ -111,40 +101,34 @@ env_cols <- rainbow_hcl(length(all_env_codes), c = 80, l = 60, start = 0, end = 
   }
   Plot_prediction_result(obs_prd_file, all_env_code, prdM, kPara_Name, LOO_pdf_file,env_cols);
 
-
 ####################################################################################################################
 ############ From Tingting Guo (tguo@iastate.edu) #################
 #### 3 prediction scenarios: 1->2; 1->3; 1->4
 LOC=read.table(paste(exp_dir,"Env_meta_table.txt",sep=""),header=T,sep="\t");
 geno=read.table(paste(exp_dir,"Genotype.txt",sep=""),header=T,sep="\t");
-pheno=read.table(paste(exp_trait_dir,"LbE_table.txt",sep=""),header=F,sep="\t");
+pheno=read.table(paste(exp_trait_dir,"LbE_table", nrow(env_mean_trait), "envs.txt",sep=""),header=F,sep="\t");
 envir=read.table(paste(exp_trait_dir,trait,'_envMeanPara_', maxR_dap1, '_', maxR_dap2, '.txt',sep=""),header=T,sep="\t");
-pheno=pheno[which(as.character(pheno$V1)%in%c("line_code",as.character(geno$line_codes))),];
 
+pheno=pheno[which(as.character(pheno$V1)%in%c("line_code",as.character(geno$line_codes))),];
 tt.line=nrow(pheno)*0.5; ##remove the environment for which the number of missing line > tt.line 
 tt.e=c(ncol(pheno)-1)-3; ##remove the line for which the number of missing environment > tt.e
 enp=which(colnames(envir) == kPara_Name); 
 fold=10;
 reshuffle=2;
 
-###Through reaction norm parameter
+###Throught reaction norm parameter
 out1.2=JGRA(LOC,pheno,geno,envir,enp,tt.line,tt.e,mets="RM.E",fold,reshuffle)  ## 1->2 prediction
-write.xlsx(out1.2, file = paste(exp_trait_dir,"Result_Norm_1.2.xlsx",sep=""))
-
 out1.3=JGRA(LOC,pheno,geno,envir,enp,tt.line,tt.e,mets="RM.G",fold,reshuffle)  ## 1->3 prediction
-write.xlsx(out1.3, file = paste(exp_trait_dir,"Result_Norm_1.3.xlsx",sep=""))
-
 out1.4=JGRA(LOC,pheno,geno,envir,enp,tt.line,tt.e,mets="RM.GE",fold,reshuffle) ## 1->4 prediction
+write.xlsx(out1.2, file = paste(exp_trait_dir,"Result_Norm_1.2.xlsx",sep=""))
+write.xlsx(out1.3, file = paste(exp_trait_dir,"Result_Norm_1.3.xlsx",sep=""))
 write.xlsx(out1.4, file = paste(exp_trait_dir,"Result_Norm_1.4.xlsx",sep=""))
-
-### Through marker effect
+### Throught marker effect
 out1.2=JGRA.marker(LOC,pheno,geno,envir,enp,tt.line,tt.e,mets="RM.E",fold,reshuffle)
-write.xlsx(out1.2, file = paste(exp_trait_dir,"Result_Marker_1.2.xlsx",sep=""))
-
 out1.3=JGRA.marker(LOC,pheno,geno,envir,enp,tt.line,tt.e,mets="RM.G",fold,reshuffle)
+out1.4=JGRA.marker(LOC,pheno,geno,envir,enp,tt.line,tt.e,mets="RM.GE",fold,reshuffle)
+write.xlsx(out1.2, file = paste(exp_trait_dir,"Result_Marker_1.2.xlsx",sep=""))
 write.xlsx(out1.3, file = paste(exp_trait_dir,"Result_Marker_1.3.xlsx",sep=""))
-
-out1.4=JGRA.marker(LOC,pheno,geno,envir,enp,tt.line,tt.e,mets="RM.GE",fold,reshuffle) #### Need a longer time to run than others; be patient
 write.xlsx(out1.4, file = paste(exp_trait_dir,"Result_Marker_1.4.xlsx",sep=""))
 
 
