@@ -119,6 +119,7 @@ LOC=read.table(paste(exp_dir,"Env_meta_table.txt",sep=""),header=T,sep="\t");
 geno=read.table(paste(exp_dir,"Genotype.txt",sep=""),header=T,sep="\t");
 pheno=read.table(paste(exp_trait_dir,"LbE_table.txt",sep=""),header=F,sep="\t");
 envir=read.table(paste(exp_trait_dir,trait,'_envMeanPara_', maxR_dap1, '_', maxR_dap2, '.txt',sep=""),header=T,sep="\t");
+pheno=pheno[which(as.character(pheno$V1)%in%c("line_code",as.character(geno$line_codes))),];
 
 tt.line=nrow(pheno)*0.5; ##remove the environment for which the number of missing line > tt.line 
 tt.e=c(ncol(pheno)-1)-3; ##remove the line for which the number of missing environment > tt.e
