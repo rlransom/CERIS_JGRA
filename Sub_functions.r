@@ -362,7 +362,7 @@ Exhaustive_search <- function(env_mean_trait, env_paras, searching_daps, exp_tra
    text(dap_x - 10 - 5, 52, 'r', cex = .5);
    r_lab_top <- 1; r_lab_mid <- 0; r_lab_bottom <- -1; max_r_lab <- paste( 'r = ', sprintf( "%.3f", max_R$R), sep = '');
    if (k > nParas) { r_lab_top <- -1; r_lab_bottom <- 1; max_r_lab <- paste( 'r = ', sprintf( "%.3f", 0 - max_R$R), sep = ''); mtext(side = 1, Paras[k - nParas ], line= -0.5,  cex = .5, bty = "n")}
-   legend(max_R$Day_x - 4 , max_R$Day_y - 4 , c(paste( max_R$Day_x, ' to ', max_R$Day_y, ' DAP', sep = ''), max_r_lab),  cex = .6, bty = "n");
+#  legend(max_R$Day_x - 4 , max_R$Day_y - 4 , c(paste( max_R$Day_x, ' to ', max_R$Day_y, ' DAP', sep = ''), max_r_lab),  cex = .6, bty = "n");
    text(dap_x - 10 + 3, 50, r_lab_top, cex = .5)
    text(dap_x - 10 + 3, 27, r_lab_mid, cex = .5);
    text(dap_x - 10 + 3, 1,  r_lab_bottom, cex = .5)
