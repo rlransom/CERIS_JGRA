@@ -533,8 +533,8 @@ JGRA=function(LOC,pheno,geno,envir,enp,tt.line,tt.e,mets,fold=10,reshuffle=50)
     #genotype=geno[genotype.match,];
     genotype_1=geno[genotype.match,];
     genotype.impute=A.mat(genotype_1[,-1],max.missing=0.5,impute.method="mean",return.imputed=T);
-    genotype=cbind(genotype_1[,1],genotype.impute$imputed);
-
+    SFI=cbind(genotype_1[,1],genotype.impute$imputed);
+    genotype=matrix(suppressWarnings(as.numeric(SFI)),nrow=nrow(SFI))
     Marker=genotype[,-1];
     
     intercept.hat=numeric();slope.hat=numeric();cor.within=matrix(999,reshuffle,n.envir);cor.all=numeric();
@@ -596,7 +596,8 @@ JGRA=function(LOC,pheno,geno,envir,enp,tt.line,tt.e,mets,fold=10,reshuffle=50)
     genotype.match=match(pheno[,1],geno[,1])
     genotype_1=geno[genotype.match,];
     genotype.impute=A.mat(genotype_1[,-1],max.missing=0.5,impute.method="mean",return.imputed=T);
-    genotype=cbind(genotype_1[,1],genotype.impute$imputed);
+    SFI=cbind(genotype_1[,1],genotype.impute$imputed);
+    genotype=matrix(suppressWarnings(as.numeric(SFI)),nrow=nrow(SFI))
     Marker=genotype[,-1];
     
     cor.within=matrix(999,reshuffle,n.envir);cor.all=numeric();
@@ -711,7 +712,8 @@ genotype.match=match(pheno[,1],geno[,1])
 #genotype=geno[genotype.match,];
     genotype_1=geno[genotype.match,];
     genotype.impute=A.mat(genotype_1[,-1],max.missing=0.5,impute.method="mean",return.imputed=T);
-    genotype=cbind(genotype_1[,1],genotype.impute$imputed);
+    SFI=cbind(genotype_1[,1],genotype.impute$imputed);
+    genotype=matrix(suppressWarnings(as.numeric(SFI)),nrow=nrow(SFI))
 
 Marker=genotype[,-1];
 n.marker=dim(Marker)[2];
