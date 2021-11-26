@@ -16,6 +16,9 @@ if (!require(rrBLUP)) { install.packages("rrBLUP", repos = "https://cloud.r-proj
 if (!require(BGLR)) { install.packages("BGLR", repos = "https://cloud.r-project.org");}
 if (!require(yarrr)) { install.packages("yarrr", repos = "https://cloud.r-project.org");}
 #if (!require(openxlsx)) { install.packages("openxlsx", repos = "https://cloud.r-project.org");}
+if (!require(lme4)) { install.packages("lme4", repos = "https://cloud.r-project.org");}
+if (!require(emmeans)) { install.packages("emmeans", repos = "https://cloud.r-project.org");}
+
 
 col_wdw <- 25;
 col_palette <- diverge_hcl(col_wdw + 1, h = c(260, 0), c = 100, l = c(50, 90), power = 1)
@@ -65,9 +68,33 @@ env_cols <- rainbow_hcl(length(all_env_codes), c = 80, l = 60, start = 0, end = 
   }
   
   line_codes <- unique(exp_trait$line_code); 
-  env_mean_trait_0 <- na.omit(aggregate(x = exp_trait$Yobs, by = list(env_code = exp_trait$env_code), mean, na.rm = T));
-  colnames(env_mean_trait_0)[2] <- 'meanY';
-  env_mean_trait <- env_mean_trait_0[order(env_mean_trait_0$meanY),];
+##  env_mean_trait_0 <- na.omit(aggregate(x = exp_trait$Yobs, by = list(env_code = exp_trait$env_code), mean, na.rm = T));
+##  colnames(env_mean_trait_0)[2] <- 'meanY';
+
+################# modified to add the opitions for estimating environmental mean by arithmetic mean (ari), mixed linear model (mlm), or least-square (emm)
+env_mean_method <- 'ari'; ### 'mlm', 'emm'. Modifying this based on the method to calculate environmental mean
+exp_trait_m <- exp_trait
+exp_trait_m$env_code <- as.factor(exp_trait_m$env_code)
+exp_trait_m$line_code <- as.factor(exp_trait_m$line_code)
+
+if (env_mean_method == 'ari') {
+ env_mean_trait_0 <- na.omit(aggregate(x = exp_trait$Yobs, by = list(env_code = exp_trait$env_code), mean, na.rm = T));
+ colnames(env_mean_trait_0)[2] <- 'meanY';
+} else if (env_mean_method == 'mlm') {
+ lm_ <- lmer(Yobs ~ (1|env_code) + line_code, data = exp_trait_m)
+ mlm_col <- coef(lm_)$env_code[,1] ## enviornmental effect from mixed linear model
+ env_mean_trait_0 <- data.frame(env_code = as.vector(unique(exp_trait_m$env_code), meanY = mlm_col)
+ } else if (env_mean_method == 'emm') {
+  env_n <- length(as.vector(unique(exp_trait_m$env_code)))
+  trait_ori_lm1 <- lm(Yobs ~ env_code + line_code, data = exp_trait_m)
+  trait_ori.pred1 <- matrix(predict(ref_grid(trait_ori_lm1)), nrow = env_n)
+  emm_col <- apply(trait_ori.pred1, 1, mean) ### marginal mean for environments
+  env_mean_trait_0 <- data.frame(env_code = as.vector(unique(exp_trait_m$env_code), meanY = emm_col)
+ }
+#########################################
+
+
+env_mean_trait <- env_mean_trait_0[order(env_mean_trait_0$meanY),];
 
 ### pairwise correlations among environments; trait distribution across environments;
 ### two figures and the correspondent output files will be saved in the trait directory;
