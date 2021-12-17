@@ -82,7 +82,7 @@ if (env_mean_method == 'ari') {
  colnames(env_mean_trait_0)[2] <- 'meanY';
 } else if (env_mean_method == 'mlm') {
  lm_ <- lmer(Yobs ~ env_code + (1|line_code), data = exp_trait_m)
- c(fixef(lm_)[1], fixef(lm_)[1] + fixef(lm_)[-1]) ## BLUE for environnment
+ mlm_col <- c(fixef(lm_)[1], fixef(lm_)[1] + fixef(lm_)[-1]) ## BLUE for environnment
  env_mean_trait_0 <- data.frame(env_code = as.vector(unique(exp_trait_m$env_code), meanY = mlm_col)
  } else if (env_mean_method == 'emm') {
   env_n <- length(as.vector(unique(exp_trait_m$env_code)))
