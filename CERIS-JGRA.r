@@ -25,7 +25,8 @@ col_palette <- diverge_hcl(col_wdw + 1, h = c(260, 0), c = 100, l = c(50, 90), p
 t_base <- 50; t_max1 <- 100; t_max2 <- 1000; Haun_threshold <- 0; p <- 1 
 
 ###
-Top_dir <- 'D:/0GbE/CERES_MS/MP/GitHub_files/'
+#Top_dir <- 'D:/0GbE/CERES_MS/MP/GitHub_files/'
+Top_dir <- '~/School/Graduate/Spring 2022/Envirotyping/CERIS_JGRA/'
 
 ###### If you modify some functions in this file, please run Line 27 each time to reload the updated functions
 subfunction_file <- paste(Top_dir, 'Sub_functions.r', sep = '');
@@ -72,25 +73,33 @@ env_cols <- rainbow_hcl(length(all_env_codes), c = 80, l = 60, start = 0, end = 
 ##  colnames(env_mean_trait_0)[2] <- 'meanY';
 
 ################# modified to add the opitions for estimating environmental mean by arithmetic mean (ari), mixed linear model (mlm), or least-square (emm)
-env_mean_method <- 'ari'; ### 'mlm', 'emm'. Modifying this based on the method to calculate environmental mean
+env_mean_method <- 'mlm'; ### 'mlm', 'emm'. Modifying this based on the method to calculate environmental mean
 exp_trait_m <- exp_trait
 exp_trait_m$env_code <- as.factor(exp_trait_m$env_code)
 exp_trait_m$line_code <- as.factor(exp_trait_m$line_code)
 
-if (env_mean_method == 'ari') {
- env_mean_trait_0 <- na.omit(aggregate(x = exp_trait$Yobs, by = list(env_code = exp_trait$env_code), mean, na.rm = T));
- colnames(env_mean_trait_0)[2] <- 'meanY';
-} else if (env_mean_method == 'mlm') {
- lm_ <- lmer(Yobs ~ env_code + (1|line_code), data = exp_trait_m)
- mlm_col <- c(fixef(lm_)[1], fixef(lm_)[1] + fixef(lm_)[-1]) ## BLUE for environnment
- env_mean_trait_0 <- data.frame(env_code = as.vector(unique(exp_trait_m$env_code), meanY = mlm_col)
- } else if (env_mean_method == 'emm') {
-  env_n <- length(as.vector(unique(exp_trait_m$env_code)))
-  trait_ori_lm1 <- lm(Yobs ~ env_code + line_code, data = exp_trait_m)
-  trait_ori.pred1 <- matrix(predict(ref_grid(trait_ori_lm1)), nrow = env_n)
-  emm_col <- apply(trait_ori.pred1, 1, mean) ### marginal mean for environments
-  env_mean_trait_0 <- data.frame(env_code = as.vector(unique(exp_trait_m$env_code), meanY = emm_col)
- }
+# if (env_mean_method == 'ari') {
+#  env_mean_trait_0 <- na.omit(aggregate(x = exp_trait$Yobs, by = list(env_code = exp_trait$env_code), mean, na.rm = T));
+#  colnames(env_mean_trait_0)[2] <- 'meanY';
+# } else if (env_mean_method == 'mlm') {
+#  lm_ <- lmer(Yobs ~ env_code + (1|line_code), data = exp_trait_m)
+#  mlm_col <- c(fixef(lm_)[1], fixef(lm_)[1] + fixef(lm_)[-1]) ## BLUE for environnment
+#  env_mean_trait_0 <- data.frame(env_code = as.vector(unique(exp_trait_m$env_code), meanY = mlm_col)
+#  } else if (env_mean_method == 'emm') {
+#   env_n <- length(as.vector(unique(exp_trait_m$env_code)))
+#   trait_ori_lm1 <- lm(Yobs ~ env_code + line_code, data = exp_trait_m)
+#   trait_ori.pred1 <- matrix(predict(ref_grid(trait_ori_lm1)), nrow = env_n)
+#   emm_col <- apply(trait_ori.pred1, 1, mean) ### marginal mean for environments
+#   env_mean_trait_0 <- data.frame(env_code = as.vector(unique(exp_trait_m$env_code), meanY = emm_col)
+#  }
+
+#########################################
+#mlm
+lm_ <- lmer(Yobs ~ env_code + (1|line_code), data = exp_trait_m)
+mlm_col <- c(fixef(lm_)[1], fixef(lm_)[1] + fixef(lm_)[-1]) ## BLUE for environment
+env_mean_trait_0 <- data.frame(env_code = as.vector(unique(exp_trait_m$env_code)), meanY = mlm_col)
+
+
 #########################################
 
 
@@ -128,6 +137,13 @@ env_mean_trait <- env_mean_trait_0[order(env_mean_trait_0$meanY),];
   }
   Plot_prediction_result(obs_prd_file, all_env_code, prdM, kPara_Name, LOO_pdf_file,env_cols);
 
+  
+  
+  
+  
+  
+  
+  
 ####################################################################################################################
 ############ From Tingting Guo (tguo@iastate.edu) #################
 #### 3 prediction scenarios: 1->2; 1->3; 1->4

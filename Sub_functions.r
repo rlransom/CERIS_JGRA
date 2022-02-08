@@ -28,7 +28,7 @@ Forecast_next_year <- function(maxR1, maxR2, env_mean_trait, PTT_PTR, PTT_PTR_in
   }
   obs_prd_m <- obs_prd_m[1:n2,]
   colnames(obs_prd_m) <- c('env_code', 'pop_code', 'ril_code', 'Prd_trait_mean', 'Prd_trait_kPara', 'Obs_trait', 'Line_mean');
-  write.table(obs_prd_m, file = obs_prd_file, sep = "\t", quote = F, row.name = F);
+  write.table(obs_prd_m, file = obs_prd_file, sep = ",", quote = F, row.name = F);
   return(prdM);
 }
 ################
@@ -69,13 +69,13 @@ LOOCV <- function(maxR1, maxR2, env_mean_trait, PTT_PTR, PTT_PTR_ind, exp_trait,
  
  obs_prd_m <- obs_prd_m[1:n,]
  colnames(obs_prd_m) <- c('env_code', 'pop_code', 'ril_code', 'Prd_trait_mean', 'Prd_trait_kPara', 'Obs_trait', 'Line_mean');
- write.table(obs_prd_m, file = obs_prd_file, sep = "\t", quote = F, row.name = F);
+ write.table(obs_prd_m, file = obs_prd_file, sep = ",", quote = F, row.name = F);
  return(prdM);
 }
 
 ###################
 Plot_prediction_result <- function(obs_prd_file, all_env_code, prdM, kPara_Name, forecast_png_file, env_cols) {
- Obs_Prd_m <- read.table(obs_prd_file, sep = "\t", header = T);
+ Obs_Prd_m <- read.table(obs_prd_file, sep = ",", header = T);
  Obs_Prd_m <- Obs_Prd_m[!is.na(Obs_Prd_m$Obs_trait),];
  prd_env <- as.vector(unique(Obs_Prd_m$env_code));
  env_rs <- matrix(ncol = 3, nrow = length(prd_env));
@@ -155,7 +155,7 @@ Pairwise_trait_env_distribution_plot <- function(exp_trait, exp_trait_dir, trait
 # trait_dist_pdf_file <- paste(exp_trait_dir, trait, '_dist_', n_envs, 'envs.pdf', sep = '');
  trait_dist_pdf_file <- paste(exp_trait_dir, trait, '_dist_', n_envs, 'envs.png', sep = '');
  pairwise_pdf_file <- paste(exp_trait_dir, trait, '_pairwise_dis', n_envs, 'envs.png', sep = '');
- mse_file <- paste(exp_trait_dir, n_envs, 'Env_meanY_MSE.txt', sep = '');
+ mse_file <- paste(exp_trait_dir, n_envs, 'Env_meanY_MSE.csv', sep = '');
 
  colnames(env_mean_trait)[2] <- 'meanY';
  env_mean_trait <- env_mean_trait[order(env_mean_trait$meanY),];
@@ -185,7 +185,7 @@ Pairwise_trait_env_distribution_plot <- function(exp_trait, exp_trait_dir, trait
     line_by_env_df <- merge(line_by_env_df, e_trait[,c(1,3)], all.x = T)
 #   }
  }
- write.table(line_by_env_df, file = paste(exp_trait_dir, 'LbE_table', n_envs, 'envs.txt', sep = ''), sep = "\t", row.names = F, quote = F);
+ write.table(line_by_env_df, file = paste(exp_trait_dir, 'LbE_table', n_envs, 'envs.csv', sep = ''), sep = ",", row.names = F, quote = F);
  lm_residuals <- data.frame(env_code = env_mean_trait$env_code);
   for (l in line_codes) {
     line_trait_0 <- subset(exp_trait, exp_trait$line_code == l & !is.na(exp_trait$Yobs));
@@ -199,7 +199,7 @@ Pairwise_trait_env_distribution_plot <- function(exp_trait, exp_trait_dir, trait
   }
   df2 <- data.frame(env_code = lm_residuals[,1], errors = rowMeans(lm_residuals[,-1], na.rm = T));
   df2 <- merge(df2, env_mean_trait);
-  write.table(lm_residuals, file = mse_file, sep = "\t", row.names = F, quote = F);
+  write.table(lm_residuals, file = mse_file, sep = ",", row.names = F, quote = F);
 
  png(pairwise_pdf_file, width= 4 * 2,height= 3 * 2, unit = "in", res = 600, pointsize=10);
  corrgram(as.matrix(line_by_env_df[,-1]), order=TRUE, lower.panel=panel.ellipse, pch = 19, upper.panel=panel.pie);
@@ -310,11 +310,11 @@ Exhaustive_search <- function(env_mean_trait, env_paras, searching_daps, exp_tra
         }
       }
     pop_cors_matrix <- pop_cors_matrix[1:n,]
-    write.table(pop_cors_matrix, file = pop_cor_file, sep = "\t", row.names = F, quote = F);
+    write.table(pop_cors_matrix, file = pop_cor_file, sep = ",", row.names = F, quote = F);
 
  }
 
- pop_cors <- read.table(pop_cor_file, header = T, sep = "\t");
+ pop_cors <- read.table(pop_cor_file, header = T, sep = ",");
  pop_cor <- subset(pop_cors, pop_cors$pop_code == p);
 # dev.off();
 # pdf(exs_pdf_file,width= nParas,height= 2,pointsize=6)
@@ -392,9 +392,9 @@ Plot_Trait_mean_envParas <- function( env_mean_trait, env_paras, d1, d2, trait, 
     env_facts_matrix[e_i,] <- c(env_mean_trait$meanY[e_i], round(env_mean, 4) );
   }
   colnames(env_facts_matrix) <- c( 'meanY', Paras);
-  envMeanPara_file <- paste(exp_trait_dir, trait, '_envMeanPara_', d1, '_', d2, '.txt', sep = '');
+  envMeanPara_file <- paste(exp_trait_dir, trait, '_envMeanPara_', d1, '_', d2, '.csv', sep = '');
   envMeanPara <- merge(env_mean_trait, env_facts_matrix);
-  write.table(envMeanPara, file = envMeanPara_file, sep = "\t", row.names = F, quote = F);
+  write.table(envMeanPara, file = envMeanPara_file, sep = ",", row.names = F, quote = F);
 #  trait_mean_envPara <- merge(env_mean_trait, env_facts_matrix, stringsAsFactors = F);
   
   png_file <- paste(exp_trait_dir, trait, 'Mean_', nrow(env_mean_trait), 'EnvPara.png', sep = ''); 
@@ -444,8 +444,8 @@ Slope_Intercept <- function(maxR_dap1, maxR_dap2, env_mean_trait, PTT_PTR, exp_t
  }
  lm_ab_matrix <- lm_ab_matrix[!is.na(lm_ab_matrix[,2]),];
  colnames(lm_ab_matrix) <- c('line_code', 'Intcp_mean', 'Slope_mean',  'Intcp_para', 'Slope_para');
- out_file <- paste(exp_trait_dir, 'Intcp_Slope', nrow(env_mean_trait), 'envs.txt', sep = '');
- write.table(lm_ab_matrix, file = out_file, sep = "\t", quote = F, row.names = F)
+ out_file <- paste(exp_trait_dir, 'Intcp_Slope', nrow(env_mean_trait), 'envs.csv', sep = '');
+ write.table(lm_ab_matrix, file = out_file, sep = ",", quote = F, row.names = F)
 
 } 
 
