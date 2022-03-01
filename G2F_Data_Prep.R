@@ -59,7 +59,7 @@ names(Trait_records)[c(1,2)]<- c("line_code","env_code")
 
 #Export Files
 
-write.csv(Trait_records, './G2F/Trait_records.csv', row.names = FALSE)
-write.csv(Env_meta_table, './G2F/Env_meta_table.csv', row.names = FALSE)
-write.csv(Environ_Params, './G2F/Environ_Params.csv', row.names = FALSE)
+#write.csv(Trait_records, './G2F/Trait_records.csv', row.names = FALSE)
+#write.csv(Env_meta_table, './G2F/Env_meta_table.csv', row.names = FALSE)
+#write.csv(Environ_Params, './G2F/Environ_Params.csv', row.names = FALSE)
 

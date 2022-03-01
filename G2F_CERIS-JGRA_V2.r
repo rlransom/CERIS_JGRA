@@ -22,7 +22,7 @@ t_base <- 50; t_max1 <- 100; t_max2 <- 1000; Haun_threshold <- 0; p <- 1
 Top_dir <- '~/School/Graduate/Spring 2022/Envirotyping/CERIS_JGRA/'
 
 ###### If you modify some functions in this file, please run Line 27 each time to reload the updated functions
-subfunction_file <- paste(Top_dir, 'Sub_functions.r', sep = '');
+subfunction_file <- paste(Top_dir, 'G2F_Sub_functions.r', sep = '');
 source(subfunction_file);
 
 ######################################
