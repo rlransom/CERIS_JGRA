@@ -902,3 +902,4 @@ JGRA.marker=function(LOC,pheno,geno,envir,enp,tt.line,tt.e,mets,fold=10,reshuffl
   
   return(list(outforfigure,r_within,r_across));
 }
+

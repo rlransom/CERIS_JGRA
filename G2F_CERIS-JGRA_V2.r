@@ -1,3 +1,6 @@
+rm(list = ls())
+
+
 ## install required packages
 if (!require(dplyr)) { install.packages("dplyr", repos = "https://cloud.r-project.org");}
 if (!require(corrgram)) { install.packages("corrgram", repos = "https://cloud.r-project.org");}
@@ -11,6 +14,7 @@ if (!require(yarrr)) { install.packages("yarrr", repos = "https://cloud.r-projec
 #if (!require(openxlsx)) { install.packages("openxlsx", repos = "https://cloud.r-project.org");}
 if (!require(lme4)) { install.packages("lme4", repos = "https://cloud.r-project.org");}
 if (!require(emmeans)) { install.packages("emmeans", repos = "https://cloud.r-project.org");}
+
 
 
 col_wdw <- 25;
@@ -110,7 +114,7 @@ try(Pairwise_trait_env_distribution_plot(exp_trait, exp_trait_dir, trait, all_en
 ##### 'FT_9Envs_PTTPTR_0LOO_cor.txt' stores all correlations from all the tested windows and environmental parameters;
 ##### 'MaxR_FTgdd_9Envs_0LOO.png' is the visualization 
 pop_cor_file <- paste(exp_trait_dir, trait, '_', nrow(env_mean_trait), 'Envs_PTTPTR_', 0, 'LOO_cor.csv', sep = '');
-Exhaustive_search(env_mean_trait, PTT_PTR, searching_daps, exp_trait_dir, exp_traits$FT, trait, 1, searching_daps, searching_daps, 0, Paras, pop_cor_file)#; searching_daps, searching_daps);
+Exhaustive_search(env_mean_trait, PTT_PTR, searching_daps, exp_trait_dir, exp_traits$Yield, trait, 1, 25, 50, 0, Paras, pop_cor_file)#; searching_daps, searching_daps);
 
 ##########################################################
 ### Change the following three parameters for the window and environmental parameter with the strongest correlation

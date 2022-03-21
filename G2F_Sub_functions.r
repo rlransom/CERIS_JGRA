@@ -284,7 +284,7 @@ Exhaustive_search <- function(env_mean_trait, env_paras, searching_daps, exp_tra
          for (e_i in 1:nrow(env_mean_trait)) {
            e <- env_mean_trait$env_code[e_i];
            env_para <- subset(env_paras, env_paras$env_code == e);
-           env_mean <- colMeans(env_para[days, (1:nParas) + 4]); ### DL, GDD, DTR, PTT, PTR, PTD, PTD2, PTS
+           env_mean <- colMeans(env_para[days, (1:nParas)+4]); ### DL, GDD, DTR, PTT, PTR, PTD, PTD2, PTS
            env_facts_matrix[e_i,] <- env_mean;
          }
          n <- n + 1;
